@@ -1,7 +1,8 @@
-import express from "express";
-
+import express, { Request , Response ,NextFunction } from "express";
+import { HttpError } from "http-errors";
+import { config } from "./config/config";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 const app = express();
-
 
 //Routes setting
 
@@ -10,4 +11,14 @@ app.get('/', (req,res,next) =>{
 })
 
 
+//global error handler ( to handle eroors in request handlers)
+app.use(globalErrorHandler);
+
 export default app;
+
+
+//global error handler is a middleware
+//it should be at last of all routes
+
+// never send err.stack on production as it contains vaious important info of server so never send it;
+//globalErroHandler is a middleware so it is not called and just written as express automatically calls middleware
