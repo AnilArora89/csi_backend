@@ -2,6 +2,7 @@ import express, { Request , Response ,NextFunction } from "express";
 import { HttpError } from "http-errors";
 import { config } from "./config/config";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
+import userRouter from "./user/userRouter";
 const app = express();
 
 //Routes setting
@@ -9,6 +10,9 @@ const app = express();
 app.get('/', (req,res,next) =>{
     res.json({message : "WELCOME TO CSI"});
 })
+
+//user route setup
+app.use('/api/users' , userRouter);
 
 
 //global error handler ( to handle eroors in request handlers)
