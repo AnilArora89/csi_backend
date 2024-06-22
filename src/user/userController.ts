@@ -1,7 +1,7 @@
 import { NextFunction , Request, Response } from "express";
 import createHttpError from "http-errors";
 import userModel from "./userModel";
-
+import bcrypt from "bcrypt";
 const createUser = async (req : Request,res : Response , next : NextFunction) => {
     //when request comes follow few steps:
     //1. Validation
@@ -25,7 +25,11 @@ const createUser = async (req : Request,res : Response , next : NextFunction) =>
         return next(error);
     }
 
-    
+    //store new user
+    // now to store we never store passwrod simply we hash it so we will do it
+    const hashedPassword = await bcrypt.hash(password , 10);
+
+
 
 
 
