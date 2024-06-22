@@ -24,6 +24,11 @@ const createUser = async (req : Request,res : Response , next : NextFunction) =>
         const error = createHttpError(400,"User Already Exists with this email");
         return next(error);
     }
+
+    
+
+
+
     res.json({message:"MSG"});
 }
 
