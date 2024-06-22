@@ -1,39 +1,48 @@
-import { NextFunction , Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import userModel from "./userModel";
 import bcrypt from "bcrypt";
-const createUser = async (req : Request,res : Response , next : NextFunction) => {
-    //when request comes follow few steps:
-    //1. Validation
-    //2. Logic
-    //3. Response
+import { sign } from "jsonwebtoken";
+import { config } from "../config/config";
 
-    const {name, email, password} = req.body;
-    if(!name || !email || !password){
-        const error = createHttpError(400, "ALL FIELDS REQUIRED")
-        return next(error);
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
+    // Extracting fields from request body
+    const { name, email, password } = req.body;
 
-        // or we could have just returned return res.json({message:INVALID});
-    }
-    
-    //now we will check whether the user trying to registered is already registerd or not?
-    //database call
-    
-    const user = await userModel.findOne({email: email});
-    if(user){
-        const error = createHttpError(400,"User Already Exists with this email");
+    // Step 1: Validation
+    if (!name || !email || !password) {
+        const error = createHttpError(400, "ALL FIELDS REQUIRED");
         return next(error);
     }
 
-    //store new user
-    // now to store we never store passwrod simply we hash it so we will do it
-    const hashedPassword = await bcrypt.hash(password , 10);
+    try {
+        // Step 2: Logic
+        // Check if user already exists
+        const existingUser = await userModel.findOne({ email: email });
+        if (existingUser) {
+            const error = createHttpError(400, "User Already Exists with this email");
+            return next(error);
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create and store new user
+        const newUser = await userModel.create({ name, email, password: hashedPassword });
+
+
+        //Step 2.1 Token generation before sending response
+        const token = sign({sub: newUser._id},config.jwtSecret as string, {expiresIn: "7d",});
+        //const token = sign({sub: newUser._id},config.jwtSecret as string, {expiresIn: "7d", algorithm: ''});
 
 
 
+        // Step 3: Response
+        res.json({ accessToken: token });
+    } catch (error) {
+        // Handling any errors that occur during the process
+        next(createHttpError(500, "Internal Server Error"));
+    }
+};
 
-
-    res.json({message:"MSG"});
-}
-
-export {createUser};
+export { createUser };
