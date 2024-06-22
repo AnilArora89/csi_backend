@@ -4,7 +4,7 @@ import { config } from "./config/config";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
 const app = express();
-
+app.use(express.json());
 //Routes setting
 
 app.get('/', (req,res,next) =>{
