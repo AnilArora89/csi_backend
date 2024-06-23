@@ -38,11 +38,14 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 
 
         // Step 3: Response
-        res.json({ accessToken: token });
+        res.status(201).json({ accessToken: token });
     } catch (error) {
         // Handling any errors that occur during the process
         next(createHttpError(500, "Internal Server Error"));
     }
 };
 
-export { createUser };
+const loginUser  = async (req:Request, res:Response, next:NextFunction) => {
+
+};
+export { createUser , loginUser};
