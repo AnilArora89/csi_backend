@@ -3,6 +3,7 @@ import { HttpError } from "http-errors";
 import { config } from "./config/config";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
+import bookRouter from "./book/bookRouter";
 const app = express();
 app.use(express.json());
 //Routes setting
@@ -13,7 +14,7 @@ app.get('/', (req,res,next) =>{
 
 //user route setup
 app.use('/api/users' , userRouter);
-
+app.use('/api/books',bookRouter);
 
 //global error handler ( to handle eroors in request handlers)
 app.use(globalErrorHandler);
