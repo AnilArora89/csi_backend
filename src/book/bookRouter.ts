@@ -4,18 +4,21 @@ import multer from "multer";
 import path from "node:path";
 const bookRouter = exprees.Router();
 
+//installed multer for raw-data types input
+//multer act as middleware
+//multer used in routes
 
 const upload = multer({
-    dest: path.resolve(__dirname, "../../public/data/uploads"),
-    limits: {fileSize: 3e7} //30 mb == 3e7
+  dest: path.resolve(__dirname, "../../public/data/uploads"),
+  limits: { fileSize: 10 * 1024 * 1024 } //30 mb == 3e7 or 10mb =10 * 1024 * 1024
 });
 
 
 // bookRouter.post("/register" ,() => {} ,createBook); - used for custom middlewares so that before request goes to controller it can be worked upon
 bookRouter.post("/register", upload.fields([
-    {name: "coverImage", maxCount: 1},
-    {name: "file", maxCount: 1}
-]) , createBook);
+  { name: "coverImage", maxCount: 1 },
+  { name: "file", maxCount: 1 }
+]), createBook);
 
 export default bookRouter;
 
