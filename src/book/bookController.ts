@@ -42,6 +42,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         })
 
         try {
+            //delete the files in local folder
             await fs.promises.unlink(filepath);
             await fs.promises.unlink(Bookfilepath);
         } catch (err) {
