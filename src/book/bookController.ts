@@ -69,6 +69,18 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
 }
 
+/*
+//helper function to delete prev cover image while uploading new cover image
+function getCloudinaryPublicId(url: string): string {
+    const parts = url.split('/');
+    const fileName = parts[parts.length - 1];
+    const folderPath = parts.slice(-2, -1)[0];
+    const publicId = `${folderPath}/${fileName.split('.')[0]}`;
+    return publicId;
+}
+    */
+
+
 const updateBook = async (req: Request, res: Response, next: NextFunction) => {
     const bookID = req.params.bookID;
     const { title, genre } = req.body;
@@ -91,6 +103,10 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
     let completeCoverImage = "";
     const files = req.files as { [filename: string]: Express.Multer.File[] };
     if (files.coverImage) {
+        /*const previousCoverImagePublicId = getCloudinaryPublicId(book.coverImage);
+        // Delete the previous cover image
+        await cloudinary.uploader.destroy(previousCoverImagePublicId);*/
+
         const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
         const filename = files.coverImage[0].filename;
         const filepath = path.resolve(__dirname, "../../public/data/uploads" + filename);
