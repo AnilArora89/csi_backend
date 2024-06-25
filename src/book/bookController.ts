@@ -6,7 +6,7 @@ import fs from "node:fs"
 import createHttpError from "http-errors";
 import { AuthRequest } from "../middlewares/authenticate";
 
-const createBook = async (req: AuthRequest, res: Response, next: NextFunction) => {
+const createBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { title, genre } = req.body;
         console.log("files", req.files);
@@ -35,12 +35,12 @@ const createBook = async (req: AuthRequest, res: Response, next: NextFunction) =
         console.log("BOOKFILE UPLOAD RESULT", bookFileUploadResult)
         //creation of book in db
 
-
+        const _req = req as AuthRequest
 
         const newBook = await bookModel.create({
             title,
             genre,
-            author: req.userId,
+            author: _req.userId,
             coverImage: uploadResult.secure_url,
             file: bookFileUploadResult.secure_url
         })
