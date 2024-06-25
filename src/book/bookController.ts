@@ -163,7 +163,40 @@ const getSingleBook = async (req: Request, res: Response, next: NextFunction) =>
         return next(createHttpError(500, "Error while getting the book"));
     }
 }
-export { createBook, updateBook, ListBook, getSingleBook }
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const book = await bookModel.findOne({ _id: req.params });
+        if (!book) return next(createHttpError(404, "Book not found that is to be deleted"));
+
+        //checking if its done by the authorised user or not
+        const _req = req as AuthRequest;
+        if (book.author.toString() !== _req.userId) {
+            return next(createHttpError(403, "Author mismatched"));
+        }
+        //after authenticating,delete the book from cloud storage
+        const coverFileSplits = book.coverImage.split("/");
+        const coverImagePublicId =
+            coverFileSplits.at(-2) +
+            "/" +
+            coverFileSplits.at(-1)?.split(".").at(-2);
+
+        const bookFileSplits = book.file.split("/");
+        const bookFilePublicId =
+            bookFileSplits.at(-2) + "/" + bookFileSplits.at(-1);
+        console.log("bookFilePublicId", bookFilePublicId);
+        // todo: add try error block
+        await cloudinary.uploader.destroy(coverImagePublicId);
+        await cloudinary.uploader.destroy(bookFilePublicId, {
+            resource_type: "raw",
+        });
+
+        await bookModel.deleteOne({ _id: req.params });
+
+        return res.sendStatus(204);
+
+    } catch (err) { return next(createHttpError(500, "Error while deleting the book")) }
+}
+export { createBook, updateBook, ListBook, getSingleBook, deleteBook }
 
 /* Extra code for List Book pagination
 const ListBook = async (req: Request, res: Response, next: NextFunction) => {

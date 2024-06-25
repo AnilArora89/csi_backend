@@ -1,5 +1,5 @@
 import exprees from "express";
-import { ListBook, createBook, getSingleBook, updateBook } from "./bookController";
+import { ListBook, createBook, getSingleBook, updateBook, deleteBook } from "./bookController";
 import multer from "multer";
 import path from "node:path";
 import authenticate from "../middlewares/authenticate";
@@ -30,7 +30,7 @@ bookRouter.patch("/:bookID", authenticate, upload.fields([
 bookRouter.get("/", ListBook)
 
 bookRouter.get("/:bookID", getSingleBook);
-
+bookRouter.delete("/:bookID", authenticate, deleteBook);
 export default bookRouter;
 
 //Working of Multer
