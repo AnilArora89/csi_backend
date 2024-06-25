@@ -141,4 +141,47 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
     res.json(updatedBook);
 };
 
-export { createBook, updateBook }
+const ListBook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        //we will need to add pagination
+        const book = await bookModel.find();
+        res.json(book);
+    }
+    catch (err) {
+        return next(createHttpError(500, "Error while getting books"));
+    }
+}
+
+export { createBook, updateBook, ListBook }
+
+/* Extra code for List Book pagination
+const ListBook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Extracting page and limit from query parameters
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+
+        // Options for pagination
+        const options = {
+            page,
+            limit,
+            populate: 'author' // Optionally populate the author field if needed
+        };
+
+        const result = await bookModel.paginate({}, options);
+
+        // Sending paginated results along with metadata
+        res.json({
+            page: result.page,
+            limit: result.limit,
+            totalPages: result.totalPages,
+            totalBooks: result.totalDocs,
+            books: result.docs,
+        });
+    } catch (err) {
+        console.log(err);
+        return next(createHttpError(500, 'Error while getting books'));
+    }
+}
+
+*/
