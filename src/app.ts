@@ -6,10 +6,7 @@ import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
 import bookRouter from "./book/bookRouter";
 const app = express();
-app.use(cors({
-    origin: "https://localhost:3000"
-}));
-
+app.use(cors());
 app.use(express.json());
 //Routes setting
 

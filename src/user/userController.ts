@@ -60,6 +60,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
+            console.log("Password mismatch");
             return next(createHttpError(400, "Username or password mismatch"));
         }
 
