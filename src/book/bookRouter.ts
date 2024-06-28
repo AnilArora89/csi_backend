@@ -16,7 +16,7 @@ const upload = multer({
 
 
 // bookRouter.post("/register" ,() => {} ,createBook); - used for custom middlewares so that before request goes to controller it can be worked upon
-bookRouter.post("/register", authenticate, upload.fields([
+bookRouter.post("/", authenticate, upload.fields([
   { name: "coverImage", maxCount: 1 },
   { name: "file", maxCount: 1 }
 ]), createBook);
