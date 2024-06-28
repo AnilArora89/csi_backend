@@ -79,79 +79,84 @@ function getCloudinaryPublicId(url: string): string {
 
 
 const updateBook = async (req: Request, res: Response, next: NextFunction) => {
-    const bookID = req.params.bookID;
-    const { title, genre } = req.body;
+    try {
+        const bookID = req.params.bookID;
+        const { title, genre } = req.body;
 
-    const book = await bookModel.findOne({ _id: bookID })
+        const book = await bookModel.findOne({ _id: bookID })
 
-    if (!book) {
-        return next(createHttpError(404, "No book found"));
+        if (!book) {
+            return next(createHttpError(404, "No book found"));
+        }
+
+        //Now we are checking if the book getting updated is being done by the author itself or not
+        const _req = req as AuthRequest;
+        if (book.author.toString() !== _req.userId) {
+            return next(createHttpError(403, "Author mismatched"));
+        }
+
+
+        //updating cover image of book
+
+        let completeCoverImage = "";
+        const files = req.files as { [filename: string]: Express.Multer.File[] };
+        if (files.coverImage) {
+            /*const previousCoverImagePublicId = getCloudinaryPublicId(book.coverImage);
+            // Delete the previous cover image
+            await cloudinary.uploader.destroy(previousCoverImagePublicId);*/
+
+            const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
+            const filename = files.coverImage[0].filename;
+            const filepath = path.resolve(__dirname, "../../public/data/uploads/" + filename);
+            completeCoverImage = filename;
+            const uploadResult = await cloudinary.uploader.upload(filepath, {
+                filename_override: completeCoverImage,
+                folder: "book-covers",
+                format: coverImageMimeType
+            })
+
+            completeCoverImage = uploadResult.secure_url;
+            await fs.promises.unlink(filepath);
+        }
+        //updating book file
+
+        let completeFileName = "";
+        if (files.file) {
+            const Bookfilename = files.file[0].filename;
+            const Bookfilepath = path.resolve(__dirname, "../../public/data/uploads/" + files.file[0].filename);
+            completeFileName = Bookfilename
+
+            const uploadBookPdf = await cloudinary.uploader.upload(Bookfilepath, {
+                resource_type: "raw",
+                filename_override: completeFileName,
+                folder: 'book-pdfs',
+                format: 'pdf',
+            })
+
+            completeFileName = uploadBookPdf.secure_url;
+            await fs.promises.unlink(Bookfilepath);
+        }
+        //findOneandUpdate is used to find and then update
+        // first param is used to find the book and second param is used to update the book if _id was found
+        const updatedBook = await bookModel.findOneAndUpdate(
+            {
+                _id: bookID,
+            },
+            {
+                title: title,
+                genre: genre,
+                coverImage: completeCoverImage ? completeCoverImage : book.coverImage,
+                file: completeFileName ? completeFileName : book.file
+            }, {
+            new: true
+        }
+        );
+
+        res.json(updatedBook);
+    } catch (err) {
+        console.log(err, " error while updating book");
+        next(createHttpError(400, "Error updating book"));
     }
-
-    //Now we are checking if the book getting updated is being done by the author itself or not
-    const _req = req as AuthRequest;
-    if (book.author.toString() !== _req.userId) {
-        return next(createHttpError(403, "Author mismatched"));
-    }
-
-
-    //updating cover image of book
-
-    let completeCoverImage = "";
-    const files = req.files as { [filename: string]: Express.Multer.File[] };
-    if (files.coverImage) {
-        /*const previousCoverImagePublicId = getCloudinaryPublicId(book.coverImage);
-        // Delete the previous cover image
-        await cloudinary.uploader.destroy(previousCoverImagePublicId);*/
-
-        const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
-        const filename = files.coverImage[0].filename;
-        const filepath = path.resolve(__dirname, "../../public/data/uploads" + filename);
-        completeCoverImage = filename;
-        const uploadResult = await cloudinary.uploader.upload(filepath, {
-            filename_override: completeCoverImage,
-            folder: "book-covers",
-            format: coverImageMimeType
-        })
-
-        completeCoverImage = uploadResult.secure_url;
-        await fs.promises.unlink(filepath);
-    }
-    //updating book file
-
-    let completeFileName = "";
-    if (files.file) {
-        const Bookfilename = files.file[0].filename;
-        const Bookfilepath = path.resolve(__dirname, "../../public/data/uploads" + files.file[0].filename);
-        completeFileName = Bookfilename
-
-        const uploadBookPdf = await cloudinary.uploader.upload(Bookfilepath, {
-            resource_type: "raw",
-            filename_override: completeFileName,
-            folder: 'book-pdfs',
-            format: 'pdf',
-        })
-
-        completeFileName = uploadBookPdf.secure_url;
-        await fs.promises.unlink(Bookfilepath);
-    }
-    //findOneandUpdate is used to find and then update
-    // first param is used to find the book and second param is used to update the book if _id was found
-    const updatedBook = await bookModel.findOneAndUpdate(
-        {
-            _id: bookID,
-        },
-        {
-            title: title,
-            genre: genre,
-            coverImage: completeCoverImage ? completeCoverImage : book.coverImage,
-            file: completeFileName ? completeFileName : book.file
-        }, {
-        new: true
-    }
-    );
-
-    res.json(updatedBook);
 };
 
 const ListBook = async (req: Request, res: Response, next: NextFunction) => {
@@ -178,7 +183,7 @@ const getSingleBook = async (req: Request, res: Response, next: NextFunction) =>
 }
 const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const book = await bookModel.findOne({ _id: req.params });
+        const book = await bookModel.findOne({ _id: req.params.bookID });
         if (!book) return next(createHttpError(404, "Book not found that is to be deleted"));
 
         //checking if its done by the authorised user or not
@@ -203,7 +208,7 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
             resource_type: "raw",
         });
 
-        await bookModel.deleteOne({ _id: req.params });
+        await bookModel.deleteOne({ _id: req.params.bookID });
 
         return res.sendStatus(204);
 
