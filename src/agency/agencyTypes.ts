@@ -1,9 +1,6 @@
 import { User } from "../user/userTypes";
-import mongoosePaginate from 'mongoose-paginate-v2';
-import mongoose, { Schema, Document } from 'mongoose';
 
-
-export interface Book {
+export interface Agency {
   _id: string;
   title: string;
   description: string;

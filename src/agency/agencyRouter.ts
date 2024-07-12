@@ -1,9 +1,9 @@
 import exprees from "express";
-import { ListBook, createBook, getSingleBook, updateBook, deleteBook } from "./bookController";
+import { listAgencies, createAgency, getSingleAgency, updateAgency, deleteAgency } from "./agencyController";
 import multer from "multer";
 import path from "node:path";
 import authenticate from "../middlewares/authenticate";
-const bookRouter = exprees.Router();
+const agencyRouter = exprees.Router();
 
 //installed multer for raw-data types input
 //multer act as middleware
@@ -15,23 +15,23 @@ const upload = multer({
 });
 
 
-// bookRouter.post("/register" ,() => {} ,createBook); - used for custom middlewares so that before request goes to controller it can be worked upon
-bookRouter.post("/", authenticate, upload.fields([
+// agencyRouter.post("/register" ,() => {} ,createBook); - used for custom middlewares so that before request goes to controller it can be worked upon
+agencyRouter.post("/", authenticate, upload.fields([
   { name: "coverImage", maxCount: 1 },
   { name: "file", maxCount: 1 }
-]), createBook);
+]), createAgency);
 
-bookRouter.patch("/:bookID", authenticate, upload.fields([
+agencyRouter.patch("/:agencyId", authenticate, upload.fields([
   { name: "coverImage", maxCount: 1 },
   { name: "file", maxCount: 1 }
-]), updateBook);
+]), updateAgency);
 
 
-bookRouter.get("/", ListBook)
+agencyRouter.get("/", listAgencies)
 
-bookRouter.get("/:bookID", getSingleBook);
-bookRouter.delete("/:bookID", authenticate, deleteBook);
-export default bookRouter;
+agencyRouter.get("/:agencyId", getSingleAgency);
+agencyRouter.delete("/:agencyId", authenticate, deleteAgency);
+export default agencyRouter;
 
 //Working of Multer
 

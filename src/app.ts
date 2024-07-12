@@ -4,7 +4,7 @@ import { config } from "./config/config";
 import cors from "cors";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
-import bookRouter from "./book/bookRouter";
+import agencyRouter from "./agency/agencyRouter";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -16,7 +16,7 @@ app.get('/', (req, res, next) => {
 
 //user route setup
 app.use('/api/users', userRouter);
-app.use('/api/books', bookRouter);
+app.use('/api/agency', agencyRouter);
 
 //global error handler ( to handle eroors in request handlers)
 app.use(globalErrorHandler);

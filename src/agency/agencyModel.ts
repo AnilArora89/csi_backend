@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { Book } from "./bookTypes";
+import { Agency } from "./agencyTypes";
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-const bookSchema = new mongoose.Schema<Book>(
+const agencySchema = new mongoose.Schema<Agency>(
     {
         title: {
             type: String,
@@ -33,6 +33,6 @@ const bookSchema = new mongoose.Schema<Book>(
     },
     { timestamps: true }
 );
-bookSchema.plugin(mongoosePaginate);
+agencySchema.plugin(mongoosePaginate);
 
-export default mongoose.model<Book>("Book", bookSchema);
+export default mongoose.model<Agency>("Agency", agencySchema);
