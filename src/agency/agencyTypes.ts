@@ -2,10 +2,10 @@ import { User } from "../user/userTypes";
 
 export interface Agency {
   _id: string;
-  title: string;
+  routeNo: string;
   description: string;
-  author: User;
-  genre: string;
+  person: User;
+  agencyNo: string;
   coverImage: string;
   file: string;
   createdAt: Date;

@@ -4,7 +4,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 const agencySchema = new mongoose.Schema<Agency>(
     {
-        title: {
+        routeNo: {
             type: String,
             required: true,
         },
@@ -12,10 +12,8 @@ const agencySchema = new mongoose.Schema<Agency>(
             type: String,
             require: true,
         },
-        author: {
-            type: mongoose.Schema.Types.ObjectId,
-            // add ref
-            ref: "User",
+        person: {
+            type: String,
             required: true,
         },
         coverImage: {
@@ -26,7 +24,7 @@ const agencySchema = new mongoose.Schema<Agency>(
             type: String,
             requied: true,
         },
-        genre: {
+        agencyNo: {
             type: String,
             required: true,
         },

@@ -8,7 +8,7 @@ import { AuthRequest } from "../middlewares/authenticate";
 import userModel from "../user/userModel";
 
 const createAgency = async (req: Request, res: Response, next: NextFunction) => {
-    const { title, genre, description } = req.body;
+    const { routeNo, agencyNo, description } = req.body;
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
@@ -46,10 +46,10 @@ const createAgency = async (req: Request, res: Response, next: NextFunction) => 
         const _req = req as AuthRequest;
 
         const newAgency = await agencyModel.create({
-            title,
+            routeNo,
             description,
-            genre,
-            author: _req.userId,
+            agencyNo,
+            person: _req.userId,
             coverImage: uploadResult.secure_url,
             file: agencyFileUploadResult.secure_url,
         });
@@ -68,7 +68,7 @@ const createAgency = async (req: Request, res: Response, next: NextFunction) => 
 const updateAgency = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const agencyId = req.params.agencyId;
-        const { title, genre } = req.body;
+        const { routeNo, agencyNo } = req.body;
 
         const agency = await agencyModel.findOne({ _id: agencyId });
 
@@ -77,7 +77,7 @@ const updateAgency = async (req: Request, res: Response, next: NextFunction) => 
         }
 
         const _req = req as AuthRequest;
-        if (agency.author.toString() !== _req.userId) {
+        if (agency.person.toString() !== _req.userId) {
             return next(createHttpError(403, "Author mismatched"));
         }
 
@@ -120,8 +120,8 @@ const updateAgency = async (req: Request, res: Response, next: NextFunction) => 
                 _id: agencyId,
             },
             {
-                title: title,
-                genre: genre,
+                routeNo: routeNo,
+                agencyNo: agencyNo,
                 coverImage: completeCoverImage ? completeCoverImage : agency.coverImage,
                 file: completeFileName ? completeFileName : agency.file
             },
