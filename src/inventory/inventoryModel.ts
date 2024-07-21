@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
+import { inventory } from "./inventoryTypes";
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { Agency } from "./agencyTypes";
 
-const agencySchema = new mongoose.Schema<Agency>(
+const inventSchema = new mongoose.Schema<inventory>(
     {
         routeNo: {
             type: String,
@@ -10,15 +10,19 @@ const agencySchema = new mongoose.Schema<Agency>(
         },
         description: {
             type: String,
-            required: true,
-        },
-        serviceReportNo: {
-            type: [String], // Use String instead of string
-            required: true,
+            require: true,
         },
         person: {
             type: String,
             required: true,
+        },
+        coverImage: {
+            type: String,
+            required: true,
+        },
+        file: {
+            type: String,
+            requied: true,
         },
         agencyNo: {
             type: String,
@@ -31,7 +35,6 @@ const agencySchema = new mongoose.Schema<Agency>(
     },
     { timestamps: true }
 );
+inventSchema.plugin(mongoosePaginate);
 
-agencySchema.plugin(mongoosePaginate);
-
-export default mongoose.model<Agency>("Agency", agencySchema);
+export default mongoose.model<inventory>("Agency", inventSchema);

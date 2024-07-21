@@ -1,6 +1,4 @@
 import express, { Request, Response, NextFunction } from "express";
-import { HttpError } from "http-errors";
-import { config } from "./config/config";
 import cors from "cors";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
@@ -17,7 +15,6 @@ app.get('/', (req, res, next) => {
 //user route setup
 app.use('/api/users', userRouter);
 app.use('/api/agency', agencyRouter);
-
 //global error handler ( to handle eroors in request handlers)
 app.use(globalErrorHandler);
 

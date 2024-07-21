@@ -7,10 +7,10 @@ import { config } from "../config/config";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
     // Extracting fields from request body
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Step 1: Validation
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
         const error = createHttpError(400, "ALL FIELDS REQUIRED");
         return next(error);
     }

@@ -1,13 +1,11 @@
-import { User } from "../user/userTypes";
-
 export interface Agency {
   _id: string;
   routeNo: string;
   description: string;
-  person: User;
+  person: string;
+  serviceReportNo: String[];
   agencyNo: string;
-  coverImage: string;
-  file: string;
   createdAt: Date;
   updatedAt: Date;
+  lastCalibrationDates: Date[];
 }
