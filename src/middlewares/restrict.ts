@@ -1,18 +1,20 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import createHttpError from "http-errors";
-// Extend the default Express Request interface to include userId and userRole
-export interface AuthRequest extends Request {
-    userId: string;
-    role: string;
-}
-const restrictTo = (roles: string[]) => {
+import { AuthRequest } from "./authenticate"; // Adjust the path as necessary
+
+const restrict = (...roles: string[]): RequestHandler => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const _req = req as AuthRequest;
-        if (!roles.includes(_req.role)) {
-            return next(createHttpError(403, "You do not have permission to perform this action."));
+        const authReq = req as AuthRequest;
+
+        console.log("User Role:", authReq.role);
+        console.log("Allowed Roles:", roles);
+
+        if (!roles.includes(authReq.role)) {
+            const error = createHttpError(403, "You do not have permission to perform this action.");
+            return next(error);
         }
         next();
-    }
-}
+    };
+};
 
-export default restrictTo;
+export default restrict;

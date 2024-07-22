@@ -1,14 +1,13 @@
-import exprees from "express";
-import { listAgencies, createAgency, getSingleAgency, updateAgency, deleteAgency, } from "./agencyController";
+import express from "express";
+import { listAgencies, createAgency, getSingleAgency, updateAgency, deleteAgency, doneAgency, } from "./agencyController";
 import multer from "multer";
 import path from "node:path";
 import Agency from './agencyModel'
 import authenticate from "../middlewares/authenticate";
-import restrictTo from "../middlewares/restrict";
+import restrict from "../middlewares/restrict";
 
-import agencyModel from './agencyModel';
 
-const agencyRouter = exprees.Router();
+const agencyRouter = express.Router();
 
 
 //installed multer for raw-data types input
@@ -56,63 +55,40 @@ agencyRouter.delete("/:agencyId", authenticate, deleteAgency);
 agencyRouter.post(
   "/",
   authenticate,
-  upload.fields([
-    { name: "coverImage", maxCount: 1 },
-    { name: "file", maxCount: 1 }
-  ]),
-  //restrictTo(['admin']), // Only admin can create agencies
+
+  restrict("admin"), // Only admin can create agencies
   createAgency
 );
 
 agencyRouter.patch(
   "/:_id",
   authenticate,
-  //restrictTo(['admin']), // Only admin can update agencies
+  restrict("admin"), // Only admin can update agencies
   updateAgency
 );
 
 agencyRouter.get(
   "/",
   authenticate,
-  //restrictTo(['admin', 'staff']), // Admin and staff can list agencies
+  restrict("admin", "staff"), // Admin and staff can list agencies
   listAgencies
 );
 
 agencyRouter.get(
   "/:agencyId",
   authenticate,
-  //restrictTo(['admin', 'staff']), // Admin and staff can get a single agency
+  restrict("admin", "staff"), // Admin and staff can get a single agency
   getSingleAgency
 );
 
 agencyRouter.delete(
   "/:agencyId",
   authenticate,
-  //restrictTo(['admin']), // Only admin can delete agencies
+  restrict("admin"), // Only admin can delete agencies
   deleteAgency
 );
 
-agencyRouter.patch('/:id', async (req, res) => {
-  const { id } = req.params;
-  const { serviceReports, calibrationDates, description } = req.body;
-
-  try {
-    const updatedAgency = await agencyModel.findByIdAndUpdate(
-      id,
-      { serviceReports, calibrationDates, description },
-      { new: true }
-    );
-
-    if (!updatedAgency) {
-      return res.status(404).json({ message: 'Agency not found' });
-    }
-
-    res.json(updatedAgency);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error updating agency' });
-  }
-});
+agencyRouter.patch('/:agencyId', doneAgency);
 
 export default agencyRouter;
 

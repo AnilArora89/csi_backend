@@ -16,17 +16,17 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const parsedToken = token.split(" ")[1];
-    const decoded = verify(parsedToken, config.jwtSecret as string) as JwtPayload;;
-    const _req = req as AuthRequest;
-    _req.userId = decoded.sub as string;
-    _req.role = decoded.role as string;
+    const decoded = verify(parsedToken, config.jwtSecret as string) as JwtPayload;
+    const authReq = req as AuthRequest;
+    authReq.userId = decoded.sub as string;
+    authReq.role = decoded.role as string;
+
+    console.log("Authenticated User:", { userId: authReq.userId, role: authReq.role });
 
     next();
   } catch (err) {
     return next(createHttpError(401, "Token expired."));
   }
 };
-
-
 
 export default authenticate;

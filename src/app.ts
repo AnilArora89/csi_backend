@@ -3,6 +3,7 @@ import cors from "cors";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
 import agencyRouter from "./agency/agencyRouter";
+import restrict from "./middlewares/restrict";
 const app = express();
 app.use(cors());
 app.use(express.json());
