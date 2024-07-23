@@ -10,8 +10,21 @@ import { AuthRequest } from "../middlewares/authenticate";
 const createAgency = async (req: Request, res: Response, next: NextFunction) => {
     const { routeNo, agencyNo, description, lastCalibrationDates, person, serviceReportNo } = req.body;
     // Parse lastCalibrationDates and serviceReportNo
-    const lastcalibdates = JSON.parse(lastCalibrationDates);
-    const serviceReportNumbers = JSON.parse(serviceReportNo);
+    if (!routeNo || !agencyNo || !description || !person) {
+        return next(createHttpError(400, "Missing required fields."));
+    }
+
+    let lastcalibdates = [];
+    let serviceReportNumbers = [];
+
+    try {
+        lastcalibdates = JSON.parse(lastCalibrationDates || "[]");
+        serviceReportNumbers = JSON.parse(serviceReportNo || "[]");
+    } catch (error) {
+        console.error("Parsing Error:", error);
+        return next(createHttpError(400, "Invalid JSON format in request body."));
+    }
+
 
     try {
         // const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -63,7 +76,7 @@ const createAgency = async (req: Request, res: Response, next: NextFunction) => 
         // await fs.promises.unlink(filePath);
         // await fs.promises.unlink(agencyFilePath);
 
-        res.status(201).json({ id: newAgency._id });
+        res.status(201).json(newAgency);
     } catch (err) {
         console.log(err);
         return next(createHttpError(500, "Error while creating the agency."));

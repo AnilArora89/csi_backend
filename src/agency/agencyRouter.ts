@@ -9,22 +9,22 @@ import agencyModel from "./agencyModel";
 
 
 const agencyRouter = express.Router();
-
+const upload = multer();
 
 //installed multer for raw-data types input
 //multer act as middleware
 //multer used in routes
 
-const upload = multer({
-  dest: path.resolve(__dirname, "../../public/data/uploads"),
-  limits: { fileSize: 10 * 1024 * 1024 } //30 mb == 3e7 or 10mb =10 * 1024 * 1024
-});
+// const upload = multer({
+//   dest: path.resolve(__dirname, "../../public/data/uploads"),
+//   limits: { fileSize: 10 * 1024 * 1024 } //30 mb == 3e7 or 10mb =10 * 1024 * 1024
+// });
 
 agencyRouter.post(
   "/",
   authenticate,
-
-  restrict("admin"), // Only admin can create agencies
+  restrict("admin"),
+  upload.none(), // Only admin can create agencies
   createAgency
 );
 

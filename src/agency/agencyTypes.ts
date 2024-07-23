@@ -3,7 +3,7 @@ export interface Agency {
   routeNo: string;
   description: string;
   person: string;
-  serviceReportNo: String[];
+  serviceReportNo: string[];
   agencyNo: string;
   createdAt: Date;
   updatedAt: Date;
