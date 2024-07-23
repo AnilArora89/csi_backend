@@ -56,7 +56,7 @@ agencyRouter.delete(
   deleteAgency
 );
 
-agencyRouter.put('/done/:agencyId', restrict("admin", "staff"), async (req, res) => {
+agencyRouter.put('/:agencyId', authenticate, async (req, res) => {
   try {
     const { serviceReportNo, lastCalibrationDates, description } = req.body;
     const agency = await agencyModel.findById(req.params.agencyId);

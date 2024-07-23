@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema<User>({
     },
     role: {
         type: String,
-        enum: ["admin", 'staff'], // enum restricts role to either 'admin' or 'staff'
+        enum: ["admin", "staff"], // enum restricts role to either 'admin' or 'staff'
         required: true,
         default: 'staff'
     }
