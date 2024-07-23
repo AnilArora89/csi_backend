@@ -176,36 +176,35 @@ interface UpdateRequestBody {
 }
 
 const doneAgency = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const { lastCalibrationDates }: UpdateRequestBody = req.body;
 
-        // Retrieve the existing agency
-        const agency = await agencyModel.findById(id);
-        if (!agency) {
-            return res.status(404).json({ error: "Agency not found" });
+    const doneAgency = async (req: Request, res: Response) => {
+        try {
+            const { serviceReports, calibrationDates, description } = req.body;
+            const agencyId = req.params.agencyId;
+
+
+
+            const agency = await agencyModel.findById(agencyId);
+
+            if (agency) {
+                agency.serviceReportNo.push(...serviceReports);
+                agency.lastCalibrationDates.push(...calibrationDates);
+                agency.description = description;
+
+                await agency.save();
+
+                res.status(200).send(agency);
+            } else {
+                res.status(404).send({ message: 'Agency not found' });
+            }
+        } catch (error) {
+            console.error('Error updating agency:', error);
+            res.status(500).send({ message: 'Internal Server Error' });
         }
+    };
 
-        // Update the calibration dates
-        if (lastCalibrationDates) {
-            // Convert the existing and new dates to Date objects
-            const existingDates = agency.lastCalibrationDates.map((date: Date) => new Date(date));
-            const newDates = lastCalibrationDates.map((date: string) => new Date(date));
-
-            // Combine and remove duplicates
-            const combinedDates = [...new Set([...existingDates, ...newDates].map(date => date.toISOString()))];
-
-            // Convert ISO strings back to Date objects
-            agency.lastCalibrationDates = combinedDates.map(dateStr => new Date(dateStr));
-        }
-
-        // Save the updated agency data
-        await agency.save();
-        res.status(200).json({ message: "Agency updated successfully" });
-
-    } catch (error) {
-        console.error("Error updating agency:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
 };
+
+
+
 export { createAgency, updateAgency, doneAgency, listAgencies, getSingleAgency, deleteAgency };
